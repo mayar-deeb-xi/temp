@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import { Navbar } from './components/Layout/Navbar';
-import { HomePage } from './pages/HomePage';
-import { ListingsPage } from './pages/ListingsPage';
-import { PropertyDetailPage } from './pages/PropertyDetailPage';
-import { FavoritesPage } from './pages/FavoritesPage';
-import { DashboardPage } from './pages/DashboardPage';
+import React, { useState } from "react";
+import {
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
+import { Navbar } from "./components/Layout/Navbar";
+import { ReactQueryProvider } from "./components/providers/ReactQueryProvider";
+import { WagmiProvider } from "./components/providers/WagmiProvider";
+import { DashboardPage } from "./pages/DashboardPage";
+import { FavoritesPage } from "./pages/FavoritesPage";
+import { HomePage } from "./pages/HomePage";
+import { ListingsPage } from "./pages/ListingsPage";
+import { PropertyDetailPage } from "./pages/PropertyDetailPage";
 
 const AppContent: React.FC = () => {
   const [walletConnected, setWalletConnected] = useState(false);
-  const [favorites, setFavorites] = useState(['1', '4']);
+  const [favorites, setFavorites] = useState(["1", "4"]);
   const navigate = useNavigate();
 
   const handleConnectWallet = () => {
@@ -20,9 +27,9 @@ const AppContent: React.FC = () => {
   };
 
   const handleToggleFavorite = (propertyId: string) => {
-    setFavorites(prev => 
+    setFavorites((prev) =>
       prev.includes(propertyId)
-        ? prev.filter(id => id !== propertyId)
+        ? prev.filter((id) => id !== propertyId)
         : [...prev, propertyId]
     );
   };
@@ -33,52 +40,51 @@ const AppContent: React.FC = () => {
 
   return (
     <>
-      <Navbar 
-        onConnectWallet={handleConnectWallet}
-        walletConnected={walletConnected}
-      />
-      
+      <Navbar />
+
       <Routes>
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
-            <HomePage 
+            <HomePage
               onToggleFavorite={handleToggleFavorite}
               onPropertyClick={handlePropertyClick}
             />
-          } 
+          }
         />
-        <Route 
-          path="/listings" 
+        <Route
+          path="/listings"
           element={
-            <ListingsPage 
+            <ListingsPage
               onToggleFavorite={handleToggleFavorite}
               onPropertyClick={handlePropertyClick}
             />
-          } 
+          }
         />
-        <Route 
-          path="/property/:id" 
-          element={<PropertyDetailPage onToggleFavorite={handleToggleFavorite} />} 
-        />
-        <Route 
-          path="/favorites" 
+        <Route
+          path="/property/:id"
           element={
-            <FavoritesPage 
+            <PropertyDetailPage onToggleFavorite={handleToggleFavorite} />
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            <FavoritesPage
               favorites={favorites}
               onToggleFavorite={handleToggleFavorite}
               onPropertyClick={handlePropertyClick}
             />
-          } 
+          }
         />
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={
-            <DashboardPage 
+            <DashboardPage
               walletConnected={walletConnected}
               onConnectWallet={handleConnectWallet}
             />
-          } 
+          }
         />
       </Routes>
     </>
@@ -88,7 +94,11 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <WagmiProvider>
+        <ReactQueryProvider>
+          <AppContent />
+        </ReactQueryProvider>
+      </WagmiProvider>
     </Router>
   );
 }
